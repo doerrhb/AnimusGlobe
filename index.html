@@ -26,14 +26,21 @@ header p{color:var(--mu);font-size:12px;margin-top:2px}
 .nav .btn{width:38px;height:34px;border:1px solid var(--line);border-radius:10px;font-size:18px;line-height:1}
 .nav .btn:hover{border-color:var(--ac)}
 .nav .cnt{flex:1;text-align:center;color:var(--mu);font-size:12px}
-#detail{margin:0 14px 10px;padding:12px;border:1px solid var(--line);border-radius:14px;background:#0a0e17;display:none;gap:12px}
-#detail.has{display:flex}
-.cov{flex:none;width:92px;aspect-ratio:3/4;border-radius:8px;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;padding:8px;background:linear-gradient(160deg,var(--c),#0a0e17 85%);box-shadow:0 6px 18px rgba(0,0,0,.5),inset 0 0 0 1px rgba(255,255,255,.12)}
+#detail{margin:0 14px 10px;padding:10px;border:1px solid var(--line);border-radius:14px;background:#0a0e17;display:none;max-height:42vh;overflow-y:auto}
+#detail.has{display:block}
+.cov{position:relative;aspect-ratio:460/215;border-radius:10px;overflow:hidden;display:flex;align-items:flex-end;padding:10px 12px;background:linear-gradient(135deg,var(--c),#0a0e17 80%);box-shadow:0 6px 18px rgba(0,0,0,.5),inset 0 0 0 1px rgba(255,255,255,.1)}
 .cov img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.cov small{font-size:7.5px;letter-spacing:.2em;opacity:.8}
-.cov b{font-size:13px;line-height:1.1;text-shadow:0 1px 6px #000}
-.cov::before{content:"";position:absolute;right:-18px;top:-18px;width:70px;height:70px;border-radius:50%;border:8px solid rgba(255,255,255,.1)}
-.meta{min-width:0;font-size:12.5px}
+.cov b{position:relative;font-size:15px;text-shadow:0 1px 8px #000}
+.cov::after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 55%,rgba(0,0,0,.55))}
+.cov:has(img) b{display:none}
+.th{flex:none;width:64px;aspect-ratio:460/215;border-radius:5px;object-fit:cover;background:#151c2c}
+.tag{display:inline-block;font-size:10.5px;padding:1px 7px;margin:5px 4px 0 0;border:1px solid var(--line);border-radius:99px;color:var(--mu)}
+#fp{display:none;padding:0 14px 10px;max-height:34vh;overflow-y:auto}
+#fp.open{display:block}
+#fp h4{font-size:10.5px;letter-spacing:.16em;color:var(--mu);margin:8px 0 5px;font-weight:600}
+#fp .chip{display:inline-block;margin:0 4px 5px 0;padding:4px 10px;font-size:12px}
+#q{width:100%;padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:#0a0e17;color:var(--tx);font:inherit;margin-top:2px}
+.meta{min-width:0;font-size:12.5px;margin-top:10px}
 .meta h2{font-size:16px;line-height:1.2;margin-bottom:4px}
 .meta .row{color:var(--mu)}
 .meta .row i{font-style:normal;color:var(--tx)}
@@ -43,7 +50,7 @@ header p{color:var(--mu);font-size:12px;margin-top:2px}
 .it{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:8px 10px;border-radius:10px;border:1px solid transparent}
 .it:hover{background:rgba(255,255,255,.04)}
 .it.on{background:rgba(124,196,255,.1);border-color:var(--line)}
-.it .d{flex:none;width:10px;height:10px;border-radius:50%;box-shadow:0 0 10px currentColor}
+.it{border-left:3px solid transparent}
 .it .t{flex:1;min-width:0}
 .it .t b{display:block;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .it .t span{font-size:12px;color:var(--mu)}
@@ -65,7 +72,7 @@ body.on #hint{opacity:.8}
  header{padding:12px 16px 4px;display:flex;align-items:baseline;gap:10px}
  header p{display:none}
  .tabs{padding:6px 16px 8px}.nav{padding:0 16px 8px}
- #detail{margin:0 12px 8px;padding:10px}.cov{width:70px}
+ #detail{margin:0 12px 8px;max-height:30vh}.cov{aspect-ratio:460/130}
  .meta p{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
  #hint{display:none}
 }
@@ -79,7 +86,8 @@ body.on #hint{opacity:.8}
  <aside><div class="in">
   <header><h1>ANIMUS <span>GLOBE</span></h1><p>Explore the series by time, place and hero</p></header>
   <div class="tabs" id="tabs"></div>
-  <div class="nav"><button class="btn" id="prev" aria-label="Previous">‹</button><span class="cnt" id="cnt"></span><button class="btn" id="next" aria-label="Next">›</button><button class="chip on" id="route">Route</button></div>
+  <div class="nav"><button class="btn" id="prev" aria-label="Previous">‹</button><span class="cnt" id="cnt"></span><button class="btn" id="next" aria-label="Next">›</button><button class="chip on" id="route">Route</button><button class="chip" id="fb">Filters</button></div>
+  <div id="fp"></div>
   <div id="detail"></div>
   <div id="list"></div>
  </div></aside>
@@ -95,25 +103,30 @@ const TOPO={"type":"Topology","objects":{"countries":{"type":"GeometryCollection
 // ===== DATA — edit freely. cover: optional image path (e.g. "covers/ac2.jpg") =====
 // y = in-game start year (negative = BCE); ids = ISO-3166 numeric country codes to highlight
 const GAMES=[
-{id:"ac1",t:"Assassin's Creed",rel:2007,y:1191,when:"1191",hero:"Altaïr Ibn-La'Ahad",place:"Holy Land",lat:33.5,lon:36.3,ids:["760","376","422"],reg:"Middle East",n:"Altaïr hunts nine Templar targets across the Third Crusade."},
-{id:"ac2",t:"Assassin's Creed II",rel:2009,y:1476,when:"1476–1499",hero:"Ezio Auditore",place:"Florence & Venice, Italy",lat:43.8,lon:11.9,ids:["380"],reg:"Europe",n:"Ezio avenges his family and uncovers the Borgia conspiracy."},
-{id:"bro",t:"Brotherhood",rel:2010,y:1499,when:"1499–1507",hero:"Ezio Auditore",place:"Rome, Italy",lat:41.9,lon:12.5,ids:["380"],reg:"Europe",n:"Ezio builds his own Brotherhood to topple the Borgia."},
-{id:"rev",t:"Revelations",rel:2011,y:1511,when:"1511–1512",hero:"Ezio Auditore",place:"Constantinople, Ottoman Empire",lat:41.0,lon:29.0,ids:["792"],reg:"Middle East",n:"Ezio's final journey uncovers Altaïr's hidden library."},
-{id:"ac3",t:"Assassin's Creed III",rel:2012,y:1753,when:"1753–1783",hero:"Connor",place:"Colonial America",lat:42.4,lon:-71.1,ids:["840"],reg:"Americas",n:"Connor joins the American Revolution to protect his people."},
-{id:"lib",t:"Liberation",rel:2012,y:1765,when:"1765–1777",hero:"Aveline de Grandpré",place:"New Orleans, USA",lat:29.95,lon:-90.07,ids:["840"],reg:"Americas",n:"Aveline fights slavery and Templar schemes in colonial Louisiana."},
-{id:"bf",t:"Black Flag",rel:2013,y:1715,when:"1715–1722",hero:"Edward Kenway",place:"The Caribbean",lat:21.5,lon:-77.5,ids:["192","332","388"],reg:"Americas",n:"Pirate Edward Kenway chases fortune in the Golden Age of Piracy."},
-{id:"fc",t:"Freedom Cry",rel:2013,y:1735,when:"1735",hero:"Adéwalé",place:"Saint-Domingue (Haiti)",lat:18.6,lon:-72.3,ids:["332"],reg:"Americas",n:"Adéwalé liberates enslaved people on the plantations of Saint-Domingue."},
-{id:"rog",t:"Rogue",rel:2014,y:1752,when:"1752–1760",hero:"Shay Cormac",place:"North Atlantic & Colonies",lat:44,lon:-64,ids:["840","124"],reg:"Americas",n:"Shay turns on the Assassins and hunts them across the colonies."},
-{id:"uni",t:"Unity",rel:2014,y:1789,when:"1789–1794",hero:"Arno Dorian",place:"Paris, France",lat:48.86,lon:2.35,ids:["250"],reg:"Europe",n:"Arno navigates the bloody turmoil of the French Revolution."},
-{id:"chn",t:"Chronicles: China",rel:2015,y:1526,when:"1526",hero:"Shao Jun",place:"Ming China",lat:34.3,lon:108.9,ids:["156"],reg:"Asia",n:"Shao Jun, a surviving Chinese Assassin, seeks vengeance."},
-{id:"syn",t:"Syndicate",rel:2015,y:1868,when:"1868",hero:"Jacob & Evie Frye",place:"London, England",lat:51.5,lon:-0.12,ids:["826"],reg:"Europe",n:"Twins Jacob and Evie Frye take London back from the Templars."},
-{id:"ind",t:"Chronicles: India",rel:2016,y:1841,when:"1841",hero:"Arbaaz Mir",place:"Punjab, India",lat:31.6,lon:74.9,ids:["356"],reg:"Asia",n:"Arbaaz Mir fights for the Brotherhood amid the Anglo-Sikh conflicts."},
-{id:"rus",t:"Chronicles: Russia",rel:2016,y:1918,when:"1918",hero:"Nikolai Orelov",place:"Russia",lat:55.75,lon:37.6,ids:["643"],reg:"Europe",n:"Nikolai Orelov races across revolutionary Russia."},
-{id:"ori",t:"Origins",rel:2017,y:-49,when:"49–43 BCE",hero:"Bayek of Siwa",place:"Ptolemaic Egypt",lat:28.5,lon:30.5,ids:["818"],reg:"Africa",n:"Bayek's quest gives birth to the Hidden Ones."},
-{id:"ody",t:"Odyssey",rel:2018,y:-431,when:"431 BCE",hero:"Kassandra / Alexios",place:"Ancient Greece",lat:38.0,lon:23.7,ids:["300"],reg:"Europe",n:"A Greek mercenary survives the Peloponnesian War."},
-{id:"val",t:"Valhalla",rel:2020,y:872,when:"872–878",hero:"Eivor",place:"Norway & England",lat:56,lon:4,ids:["578","826"],reg:"Europe",n:"Eivor leads a Viking clan to settle in Anglo-Saxon England."},
-{id:"mir",t:"Mirage",rel:2023,y:861,when:"861",hero:"Basim Ibn Ishaq",place:"Baghdad, Abbasid Caliphate",lat:33.3,lon:44.4,ids:["368"],reg:"Middle East",n:"A Baghdad street thief becomes a Hidden One."},
-{id:"sha",t:"Shadows",rel:2025,y:1579,when:"1579–1582",hero:"Naoe & Yasuke",place:"Sengoku Japan",lat:35.0,lon:135.8,ids:["392"],reg:"Asia",n:"Shinobi Naoe and samurai Yasuke in a land at war."}
+{id:"ac1",cover:"cards/ac1.jpg",type:"main",plat:["PlayStation","Xbox","PC"],t:"Assassin's Creed",rel:2007,y:1191,when:"1191",hero:"Altaïr Ibn-La'Ahad",place:"Holy Land",lat:33.5,lon:36.3,ids:["760","376","422"],reg:"Middle East",n:"Altaïr hunts nine Templar targets across the Third Crusade."},
+{id:"ac2",cover:"cards/ac2.jpg",type:"main",plat:["PlayStation","Xbox","PC"],t:"Assassin's Creed II",rel:2009,y:1476,when:"1476–1499",hero:"Ezio Auditore",place:"Florence & Venice, Italy",lat:43.8,lon:11.9,ids:["380"],reg:"Europe",n:"Ezio avenges his family and uncovers the Borgia conspiracy."},
+{id:"bro",cover:"cards/acb.jpg",type:"main",plat:["PlayStation","Xbox","PC"],t:"Brotherhood",rel:2010,y:1499,when:"1499–1507",hero:"Ezio Auditore",place:"Rome, Italy",lat:41.9,lon:12.5,ids:["380"],reg:"Europe",n:"Ezio builds his own Brotherhood to topple the Borgia."},
+{id:"rev",cover:"cards/acr.jpg",type:"main",plat:["PlayStation","Xbox","PC"],t:"Revelations",rel:2011,y:1511,when:"1511–1512",hero:"Ezio Auditore",place:"Constantinople, Ottoman Empire",lat:41.0,lon:29.0,ids:["792"],reg:"Middle East",n:"Ezio's final journey uncovers Altaïr's hidden library."},
+{id:"ac3",cover:"cards/ac3.jpg",type:"main",plat:["PlayStation","Xbox","PC","Nintendo"],t:"Assassin's Creed III",rel:2012,y:1753,when:"1753–1783",hero:"Connor",place:"Colonial America",lat:42.4,lon:-71.1,ids:["840"],reg:"Americas",n:"Connor joins the American Revolution to protect his people."},
+{id:"lib",cover:"cards/ac3l.jpg",type:"main",plat:["PlayStation","Xbox","PC"],t:"Liberation",rel:2012,y:1765,when:"1765–1777",hero:"Aveline de Grandpré",place:"New Orleans, USA",lat:29.95,lon:-90.07,ids:["840"],reg:"Americas",n:"Aveline fights slavery and Templar schemes in colonial Louisiana."},
+{id:"bf",cover:"cards/acbf.jpg",type:"main",plat:["PlayStation","Xbox","PC","Nintendo"],t:"Black Flag",rel:2013,y:1715,when:"1715–1722",hero:"Edward Kenway",place:"The Caribbean",lat:21.5,lon:-77.5,ids:["192","332","388"],reg:"Americas",n:"Pirate Edward Kenway chases fortune in the Golden Age of Piracy."},
+{id:"fc",cover:"cards/acfc.jpg",type:"main",plat:["PlayStation","Xbox","PC"],t:"Freedom Cry",rel:2013,y:1735,when:"1735",hero:"Adéwalé",place:"Saint-Domingue (Haiti)",lat:18.6,lon:-72.3,ids:["332"],reg:"Americas",n:"Adéwalé liberates enslaved people on the plantations of Saint-Domingue."},
+{id:"rog",cover:"cards/acro.jpg",type:"main",plat:["PlayStation","Xbox","PC"],t:"Rogue",rel:2014,y:1752,when:"1752–1760",hero:"Shay Cormac",place:"North Atlantic & Colonies",lat:44,lon:-64,ids:["840","124"],reg:"Americas",n:"Shay turns on the Assassins and hunts them across the colonies."},
+{id:"uni",cover:"cards/acu.jpg",type:"main",plat:["PlayStation","Xbox","PC"],t:"Unity",rel:2014,y:1789,when:"1789–1794",hero:"Arno Dorian",place:"Paris, France",lat:48.86,lon:2.35,ids:["250"],reg:"Europe",n:"Arno navigates the bloody turmoil of the French Revolution."},
+{id:"chn",cover:"cards/accc.jpg",type:"main",plat:["PlayStation","Xbox","PC"],t:"Chronicles: China",rel:2015,y:1526,when:"1526",hero:"Shao Jun",place:"Ming China",lat:34.3,lon:108.9,ids:["156"],reg:"Asia",n:"Shao Jun, a surviving Chinese Assassin, seeks vengeance."},
+{id:"syn",cover:"cards/acs.jpg",type:"main",plat:["PlayStation","Xbox","PC"],t:"Syndicate",rel:2015,y:1868,when:"1868",hero:"Jacob & Evie Frye",place:"London, England",lat:51.5,lon:-0.12,ids:["826"],reg:"Europe",n:"Twins Jacob and Evie Frye take London back from the Templars."},
+{id:"ind",cover:"cards/acci.jpg",type:"main",plat:["PlayStation","Xbox","PC"],t:"Chronicles: India",rel:2016,y:1841,when:"1841",hero:"Arbaaz Mir",place:"Punjab, India",lat:31.6,lon:74.9,ids:["356"],reg:"Asia",n:"Arbaaz Mir fights for the Brotherhood amid the Anglo-Sikh conflicts."},
+{id:"rus",cover:"cards/accr.jpg",type:"main",plat:["PlayStation","Xbox","PC"],t:"Chronicles: Russia",rel:2016,y:1918,when:"1918",hero:"Nikolai Orelov",place:"Russia",lat:55.75,lon:37.6,ids:["643"],reg:"Europe",n:"Nikolai Orelov races across revolutionary Russia."},
+{id:"ori",cover:"cards/aco.jpg",type:"main",plat:["PlayStation","Xbox","PC"],t:"Origins",rel:2017,y:-49,when:"49–43 BCE",hero:"Bayek of Siwa",place:"Ptolemaic Egypt",lat:28.5,lon:30.5,ids:["818"],reg:"Africa",n:"Bayek's quest gives birth to the Hidden Ones."},
+{id:"ody",cover:"cards/acod.jpg",type:"main",plat:["PlayStation","Xbox","PC"],t:"Odyssey",rel:2018,y:-431,when:"431 BCE",hero:"Kassandra / Alexios",place:"Ancient Greece",lat:38.0,lon:23.7,ids:["300"],reg:"Europe",n:"A Greek mercenary survives the Peloponnesian War."},
+{id:"val",cover:"cards/acv.jpg",type:"main",plat:["PlayStation","Xbox","PC"],t:"Valhalla",rel:2020,y:872,when:"872–878",hero:"Eivor",place:"Norway & England",lat:56,lon:4,ids:["578","826"],reg:"Europe",n:"Eivor leads a Viking clan to settle in Anglo-Saxon England."},
+{id:"mir",cover:"cards/acm.jpg",type:"main",plat:["PlayStation","Xbox","PC"],t:"Mirage",rel:2023,y:861,when:"861",hero:"Basim Ibn Ishaq",place:"Baghdad, Abbasid Caliphate",lat:33.3,lon:44.4,ids:["368"],reg:"Middle East",n:"A Baghdad street thief becomes a Hidden One."},
+{id:"sha",cover:"cards/acsh.jpg",type:"main",plat:["PlayStation","Xbox","PC"],t:"Shadows",rel:2025,y:1579,when:"1579–1582",hero:"Naoe & Yasuke",place:"Sengoku Japan",lat:35.0,lon:135.8,ids:["392"],reg:"Asia",n:"Shinobi Naoe and samurai Yasuke in a land at war."},
+{id:"atc",t:"Altaïr's Chronicles",rel:2008,y:1191,when:"1191",hero:"Altaïr Ibn-La'Ahad",place:"Holy Land",lat:32.9,lon:35.1,ids:["376","422"],reg:"Middle East",type:"mobile",plat:["Mobile","Nintendo"],n:"Handheld prequel-era adventure following Altaïr (DS and mobile)."},
+{id:"blo",t:"Bloodlines",rel:2009,y:1191,when:"1191",hero:"Altaïr Ibn-La'Ahad",place:"Cyprus",lat:35.0,lon:33.2,ids:["196"],reg:"Middle East",type:"mobile",plat:["PlayStation"],n:"PSP side story set in Cyprus, following AC1."},
+{id:"pir",t:"Pirates",rel:2011,y:1700,when:"early 1700s",hero:"Alex Smith",place:"The Caribbean",lat:19,lon:-72,ids:["192","332","388"],reg:"Americas",type:"mobile",plat:["Mobile"],n:"Mobile naval game of pirate hunting in the Caribbean."},
+{id:"idn",t:"Identity",rel:2016,y:1500,when:"c. 1500s",hero:"Custom Assassin",place:"Renaissance Italy",lat:43.3,lon:11.3,ids:["380"],reg:"Europe",type:"mobile",plat:["Mobile"],n:"Mobile RPG where you build your own Assassin in Renaissance Italy."},
+{id:"reb",t:"Rebellion",rel:2018,y:1190,when:"c. 1190s",hero:"Custom Assassin",place:"Medieval Spain",lat:40.4,lon:-3.7,ids:["724"],reg:"Europe",type:"mobile",plat:["Mobile"],n:"Mobile strategy game of Assassins in medieval Spain."}
 ];
 // ===================================================================================
 const $=i=>document.getElementById(i),fmt=y=>y<0?-y+" BCE":y;
@@ -127,7 +140,7 @@ const MODES={
  reg:{n:"Region",s:(a,b)=>REG.indexOf(a.reg)-REG.indexOf(b.reg)||a.y-b.y,g:g=>g.reg},
  hero:{n:"Protagonist",s:(a,b)=>a.hero.localeCompare(b.hero)||a.rel-b.rel,g:g=>g.hero}
 };
-let mode="rel",order=[],col={},sel=null,hl=new Set(),arcs=true,entered=false,fly=null,drag=null,pts=[];
+const F={plat:new Set(),reg:new Set(),era:new Set(),q:"",mobile:false};let mode="rel",order=[],col={},sel=null,hl=new Set(),arcs=true,entered=false,fly=null,drag=null,pts=[];
 const rot=[-20,-20],cv=$("g"),ctx=cv.getContext("2d");
 const countries=topojson.feature(TOPO,TOPO.objects.countries).features,land=topojson.feature(TOPO,TOPO.objects.land),
  borders=topojson.mesh(TOPO,TOPO.objects.countries,(a,b)=>a!==b),sphere={type:"Sphere"},grat=d3.geoGraticule10();
@@ -169,30 +182,37 @@ cv.addEventListener("pointermove",e=>{if(!drag)return;const dx=e.clientX-drag.x,
 cv.addEventListener("pointerup",e=>{const d=drag;drag=null;if(!d||d.m||!entered)return;const r=cv.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;let best,bd=22;for(const p of pts){const q=Math.hypot(p[0]-x,p[1]-y);if(q<bd){bd=q;best=p[2]}}if(best)select(best)});
 cv.addEventListener("wheel",e=>{e.preventDefault();proj.scale(R=Math.max(Math.min(W,H)*.25,Math.min(Math.min(W,H)*.9,R*(e.deltaY<0?1.08:.93))))},{passive:false});
 
+const ok=g=>(F.mobile||g.type!=="mobile")&&(!F.plat.size||g.plat.some(p=>F.plat.has(p)))&&(!F.reg.size||F.reg.has(g.reg))&&(!F.era.size||F.era.has(era(g.y)))&&(!F.q||(g.t+" "+g.hero+" "+g.place).toLowerCase().includes(F.q));
+const ERAS=["Ancient","Medieval","Renaissance & Early Modern","Age of Sail & Revolution","Industrial Age","Modern Era"],PLATS=["PlayStation","Xbox","PC","Nintendo","Mobile"];
+function fpanel(){const hid=GAMES.filter(g=>g.type==="mobile").length,c=(f,v,on)=>`<button class="chip${on?" on":""}" data-f="${f}" data-v="${v}">${v}</button>`;
+ $("fp").innerHTML=`<input id="q" placeholder="Search title, hero, place…" value="${F.q}"><h4>VISIBILITY</h4><button class="chip${F.mobile?" on":""}" data-f="mobile">Mobile &amp; handheld spin-offs (${hid})</button><h4>PLATFORM</h4>${PLATS.map(p=>c("plat",p,F.plat.has(p))).join("")}<h4>REGION</h4>${REG.map(p=>c("reg",p,F.reg.has(p))).join("")}<h4>ERA</h4>${ERAS.map(p=>c("era",p,F.era.has(p))).join("")}`;
+ const q=$("q");q.oninput=()=>{F.q=q.value.trim().toLowerCase();render()}}
 function render(){
- const M=MODES[mode];order=[...GAMES].sort(M.s);
+ const M=MODES[mode];order=GAMES.filter(ok).sort(M.s);if(sel&&!order.includes(sel)){sel=null;hl.clear();detail()}
  const groups=[];if(M.g)order.forEach(g=>{const k=M.g(g);if(!groups.includes(k))groups.push(k)});
  order.forEach((g,i)=>col[g.id]=M.g?PAL[groups.indexOf(M.g(g))%PAL.length]:d3.interpolateTurbo(.08+.84*i/(order.length-1)));
  let h="",last;
  for(const g of order){const k=M.g?M.g(g):null;if(k!==last&&M.g){h+=`<div class="gh">${k}</div>`;last=k}
-  h+=`<button class="it${g===sel?" on":""}" data-id="${g.id}"><span class="d" style="background:${col[g.id]};color:${col[g.id]}"></span><span class="t"><b>${g.t}</b><span>${mode==="hero"?g.when+" · "+g.rel:mode==="reg"?g.place+" · "+g.when:g.hero+" · "+(mode==="rel"?g.when:g.rel)}</span></span></button>`}
+  h+=`<button class="it${g===sel?" on":""}" data-id="${g.id}">${g.cover?`<img class="th" src="${g.cover}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">`:`<span class="th" style="background:linear-gradient(135deg,${col[g.id]},#0a0e17)"></span>`}<span class="t"><b>${g.t}</b><span>${mode==="hero"?g.when+" · "+g.rel:mode==="reg"?g.place+" · "+g.when:g.hero+" · "+(mode==="rel"?g.when:g.rel)}</span></span></button>`}
  $("list").innerHTML=h;count();
 }
 function count(){$("cnt").textContent=sel?`${order.indexOf(sel)+1} / ${order.length}`:`${order.length} games`}
 function detail(){const g=sel,d=$("detail");if(!g){d.className="";return}
- d.className="has";d.innerHTML=`<div class="cov" style="--c:${col[g.id]}">${g.cover?`<img src="${g.cover}" alt="" onerror="this.remove()">`:""}<small>ASSASSIN'S CREED</small><b>${g.t.replace("Assassin's Creed","").replace(/^\s*$/,"I").trim()||g.t}</b></div>
- <div class="meta"><h2>${g.t}</h2><div class="row"><i>${g.hero}</i></div><div class="row">${g.place} · <i>${g.when.includes("BCE")||g.when.length>4?g.when:g.when}</i></div><div class="row">Released <i>${g.rel}</i> · ${era(g.y)} · ${g.reg}</div><p>${g.n}</p></div>`}
+ d.className="has";d.innerHTML=`<div class="cov" style="--c:${col[g.id]}">${g.cover?`<img src="${g.cover}" alt="${g.t}" onerror="this.remove()">`:""}<b>${g.t}</b></div>
+ <div class="meta"><h2>${g.t}</h2><div class="row"><i>${g.hero}</i></div><div class="row">${g.place} · <i>${g.when.includes("BCE")||g.when.length>4?g.when:g.when}</i></div><div class="row">Released <i>${g.rel}</i> · ${era(g.y)} · ${g.reg}</div><p>${g.n}</p>${g.plat.map(p=>`<span class="tag">${p}</span>`).join("")}${g.type==="mobile"?'<span class="tag">Mobile / handheld</span>':""}</div>`}
 function select(g,go=true){sel=g;hl=new Set(g.ids);detail();render();location.hash=g.id;if(go)flyTo(g.lon,g.lat);const it=document.querySelector(`.it[data-id="${g.id}"]`);if(it)it.scrollIntoView({block:"nearest",behavior:"smooth"})}
 function step(d){if(!entered)return;const i=sel?order.indexOf(sel):d>0?-1:0;select(order[(i+d+order.length)%order.length])}
 
 $("tabs").innerHTML=Object.entries(MODES).map(([k,m])=>`<button class="chip${k===mode?" on":""}" data-m="${k}">${m.n}</button>`).join("");
 $("tabs").onclick=e=>{const m=e.target.dataset.m;if(!m)return;mode=m;document.querySelectorAll("#tabs .chip").forEach(c=>c.classList.toggle("on",c.dataset.m===m));render();detail()};
+$("fb").onclick=e=>{const o=$("fp").classList.toggle("open");e.currentTarget.classList.toggle("on",o);if(o)fpanel()};
+$("fp").onclick=e=>{const b=e.target.closest("[data-f]");if(!b)return;const f=b.dataset.f;if(f==="mobile")F.mobile=!F.mobile;else{const s=F[f];s.has(b.dataset.v)?s.delete(b.dataset.v):s.add(b.dataset.v)}const q=F.q;fpanel();render()};
 $("list").onclick=e=>{const b=e.target.closest(".it");if(b)select(GAMES.find(g=>g.id===b.dataset.id))};
 $("prev").onclick=()=>step(-1);$("next").onclick=()=>step(1);
 $("route").onclick=e=>{arcs=!arcs;e.currentTarget.classList.toggle("on",arcs)};
 addEventListener("keydown",e=>{if(e.key==="ArrowRight"||e.key==="ArrowDown"){e.preventDefault();step(1)}else if(e.key==="ArrowLeft"||e.key==="ArrowUp"){e.preventDefault();step(-1)}else if(e.key==="Escape"){sel=null;hl.clear();detail();render();history.replaceState(0,"",location.pathname)}});
 function enter(){if(entered)return;entered=true;document.body.classList.add("on")}
 $("enter").onclick=enter;
-render();requestAnimationFrame(frame);
+render();fpanel();requestAnimationFrame(frame);
 const h=location.hash.slice(1),first=GAMES.find(g=>g.id===h);if(first){enter();setTimeout(()=>select(first),500)}
 </script></body></html>
