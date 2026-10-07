@@ -2,12 +2,15 @@
 
 <img src="logo.png" alt="Animus Globe" width="260">
 
+## 🌍 [**Launch Animus Globe → animusglobe.pages.dev**](https://animusglobe.pages.dev)
+
 # Animus Globe
 
 **Explore the entire Assassin's Creed franchise on an interactive 3D globe.**
 
 Spin the world, jump between games, and sort the series by release date, in-game chronology, era, region, protagonist, and platform.
 
+[![Live demo](https://img.shields.io/badge/live%20demo-animusglobe.pages.dev-7cc4ff)](https://animusglobe.pages.dev)
 ![Static site](https://img.shields.io/badge/site-static-7cc4ff)
 ![No backend](https://img.shields.io/badge/backend-none-lightgrey)
 ![Dependencies](https://img.shields.io/badge/runtime%20deps-0%20(inlined)-success)
