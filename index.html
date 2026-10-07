@@ -53,6 +53,8 @@ header p{color:var(--mu);font-size:12px;margin-top:2px}
 .it:hover{background:rgba(255,255,255,.04)}
 .it.on{background:rgba(124,196,255,.1);border-color:var(--line)}
 .it{border-left:3px solid transparent}
+.it.kid{margin-left:20px;width:calc(100% - 20px);border-left-color:var(--line);padding-top:5px;padding-bottom:5px}
+.it.kid .th{width:52px}
 .it .t{flex:1;min-width:0}
 .it .t b{display:block;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .it .t span{font-size:12px;color:var(--mu)}
@@ -104,14 +106,14 @@ const TOPO={"type":"Topology","objects":{"countries":{"type":"GeometryCollection
 // y = in-game start year (negative = BCE); ids = ISO-3166 numeric country codes to highlight
 const PL={P:"PlayStation",X:"Xbox",C:"PC",N:"Nintendo",M:"Mobile",V:"VR",B:"Browser",J:"Java phones"};
 // [id,title,type,date,settingYear,settingLabel,hero,place,lat,lon,countryIds,region,platforms,note,cover,approx]
-// type: main|spin|handheld|dlc|mobile|java. cover: file in /cards/ (name only = .jpg). date: YYYY-MM-DD / YYYY-MM / YYYY / TBA. approx=1 flags uncertain setting/date.
+// type: main|spin|handheld (DS, PSP, Vita)|remake|dlc|mobile|java. cover: file in /cards/ (name only = .jpg). date: YYYY-MM-DD / YYYY-MM / YYYY / TBA. approx=1 flags uncertain setting/date.
 const RAW=[
 ["ac1","Assassin's Creed","main","2007-11-13",1191,"1191","Altaïr Ibn-La'Ahad","Jerusalem, Acre, Damascus, Masyaf",33.5,36.3,"760,376,422","Middle East","PXC","Altaïr hunts nine Templar targets during the Third Crusade.","ac1"],
 ["ac2","Assassin's Creed II","main","2009-11-17",1476,"1476–1499","Ezio Auditore da Firenze","Florence, Venice, Forlì, Tuscany",43.77,11.25,"380","Europe","PXCN","Ezio avenges his family and uncovers the Borgia conspiracy.","ac2"],
 ["bro","Brotherhood","main","2010-11-16",1499,"1499–1507","Ezio Auditore da Firenze","Rome",41.9,12.5,"380","Europe","PXCN","Ezio rebuilds the Brotherhood to topple the Borgia in Rome.","acb"],
 ["rev","Revelations","main","2011-11-15",1511,"1511–1512","Ezio Auditore da Firenze","Constantinople, Cappadocia (Ottoman Empire)",41.0,29.0,"792","Middle East","PXCN","Ezio's final journey; Altaïr's memories are also playable.","acr"],
 ["ac3","Assassin's Creed III","main","2012-10-30",1754,"1754–1783","Ratonhnhaké:ton (Connor)","Boston, New York, the Frontier",42.36,-71.06,"840","North America","PXCN","Connor takes part in the American Revolution; Haytham Kenway is also playable.","ac3"],
-["lib","Liberation","main","2012-10-30",1765,"1765–1777","Aveline de Grandpré","New Orleans, Louisiana bayou, Chichén Itzá",29.95,-90.07,"840,484","North America","PXC","Aveline fights slavery and the Templars. Launched on PS Vita; HD ports followed.","ac3l"],
+["lib","Liberation","handheld","2012-10-30",1765,"1765–1777","Aveline de Grandpré","New Orleans, Louisiana bayou, Chichén Itzá",29.95,-90.07,"840,484","North America","PXC","Aveline fights slavery and the Templars. Originally a PS Vita game; HD ports followed.","ac3l"],
 ["bf","Black Flag","main","2013-10-29",1715,"1715–1722","Edward Kenway","Havana, Nassau, Kingston",23.1,-82.4,"192,388","Caribbean","PXCN","Pirate Edward Kenway in the Golden Age of Piracy.","acbf"],
 ["rog","Rogue","main","2014-11-11",1752,"1752–1760","Shay Patrick Cormac","North Atlantic, New York, River Valley",43,-66,"840,124","North America","PXCN","Shay leaves the Assassins and hunts them. PC release followed in 2015.","acro"],
 ["uni","Unity","main","2014-11-11",1789,"1789–1794","Arno Dorian","Paris",48.86,2.35,"250","Europe","PXC","Arno Dorian during the French Revolution.","acu"],
@@ -121,7 +123,7 @@ const RAW=[
 ["val","Valhalla","main","2020-11-10",872,"872–878","Eivor Varinsdottir","Norway and England",56,4,"578,826","Europe","PXC","Eivor leads a Viking clan to settle in Anglo-Saxon England.","acv"],
 ["mir","Mirage","main","2023-10-05",861,"861","Basim Ibn Ishaq","Baghdad",33.3,44.4,"368","Middle East","PXCM","Basim's rise from street thief to Hidden One. iOS followed in 2024.","acm"],
 ["sha","Shadows","main","2025-03-20",1579,"1579–1582","Naoe & Yasuke","Kyoto and the Kansai region",35.0,135.8,"392","Asia","PXC","Shinobi Naoe and samurai Yasuke in Sengoku-era Japan. Delayed from Feb 2025.","acsh"],
-["res","Black Flag Resynced","main","2026-07-09",1715,"1715–1722","Edward Kenway","Havana, Nassau, Kingston",23.1,-82.4,"192,388","Caribbean","PXC","Remake of Black Flag.","acbfr"],
+["res","Black Flag Resynced","remake","2026-07-09",1715,"1715–1722","Edward Kenway","Havana, Nassau, Kingston",23.1,-82.4,"192,388","Caribbean","PXC","Full remake of Black Flag.","acbfr"],
 ["chn","Chronicles: China","spin","2015-04-21",1526,"1526","Shao Jun","Beijing, Luoyang",39.9,116.4,"156","Asia","PXC","2.5D stealth platformer; Shao Jun seeks vengeance.","accc"],
 ["ind","Chronicles: India","spin","2016-01-12",1841,"1841","Arbaaz Mir","Punjab, Amritsar",31.6,74.9,"356","Asia","PXC","Arbaaz Mir in the Sikh Empire under East India Company pressure.","acci"],
 ["rus","Chronicles: Russia","spin","2016-02-09",1918,"1918","Nikolai Orelov","Russia",55.75,37.6,"643","Europe","PXC","Nikolai Orelov flees revolutionary Russia.","accr"],
@@ -131,7 +133,7 @@ const RAW=[
 ["dav","The Da Vinci Disappearance","dlc","2011-03-08",1506,"c. 1506–1507","Ezio Auditore da Firenze","Rome area",41.9,12.5,"380","Europe","PXC","Brotherhood DLC; Leonardo is kidnapped.","acb",1],
 ["lost","The Lost Archive","dlc","2012-02-28",2012,"Present day (Animus)","Subject 16 (Clay Kaczmarek)","Animus (non-geographic)",41.9,12.5,"","Multi-Region","PXC","Revelations DLC with Clay Kaczmarek.","acr",1],
 ["tyr","The Tyranny of King Washington","dlc","2013-02-19",1776,"Alternate history, 1780s","Ratonhnhaké:ton (Connor)","Boston, New York, the Frontier",42.36,-71.06,"840","North America","PXCN","AC III DLC set in an alternate timeline.","ac3",1],
-["fc","Freedom Cry","spin","2013-12-17",1735,"1735","Adéwalé","Saint-Domingue (Haiti)",18.55,-72.3,"332","Caribbean","PXC","Standalone game since 2014; originally a Black Flag DLC.","acfc"],
+["fc","Freedom Cry","dlc","2013-12-17",1735,"1735","Adéwalé","Saint-Domingue (Haiti)",18.55,-72.3,"332","Caribbean","PXC","Black Flag DLC; later released as a standalone game in 2014.","acfc"],
 ["dead","Dead Kings","dlc","2015-01-13",1794,"1794","Arno Dorian","Saint-Denis, Paris",48.94,2.36,"250","Europe","PXC","Unity DLC.","acu"],
 ["jtr","Jack the Ripper","dlc","2015-12-15",1888,"1888","Evie Frye","Whitechapel, London",51.52,-0.07,"826","Europe","PXC","Syndicate DLC.","acs"],
 ["mah","The Last Maharaja","dlc","2016-03-01",1868,"1868","Jacob & Evie Frye","London",51.5,-0.12,"826","Europe","PXC","Syndicate DLC with Duleep Singh.","acs"],
@@ -163,8 +165,10 @@ const RAW=[
 ];
 const GAMES=RAW.map(([id,t,type,d,y,when,hero,place,lat,lon,ids,reg,pl,n,cv,ap])=>({id,t,type,d,y,when,hero,place,lat,lon,ids:ids?ids.split(","):[],reg,plat:[...pl].map(c=>PL[c]),n,cover:cv?(cv.includes(".")?"cards/"+cv:`cards/${cv}.jpg`):"",ap:!!ap,rel:d==="TBA"?9999:+d.slice(0,4)}));
 {const seen={};GAMES.forEach(g=>{const k=g.lat+","+g.lon;(seen[k]=seen[k]||[]).push(g)});Object.values(seen).forEach(a=>{if(a.length>1)a.forEach((g,i)=>{const th=6.283*i/a.length;g.lat+=Math.sin(th)*.9;g.lon+=Math.cos(th)*1.2})})}
+const PAR={forli:"ac2",bonf:"ac2",dav:"bro",lost:"rev",tyr:"ac3",fc:"bf",dead:"uni",jtr:"syn",mah:"syn",hid:"ori",pha:"ori",lfb:"ody",atl:"ody",wrath:"val",paris:"val",dawn:"val",lastc:"val"};
+GAMES.forEach(g=>g.parent=PAR[g.id]||null);const byId=Object.fromEntries(GAMES.map(g=>[g.id,g]));
 const MONTHS="Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split(" "),fmtd=d=>d==="TBA"?"TBA (unreleased)":d.length===4?d:d.length===7?MONTHS[+d.slice(5)-1]+" "+d.slice(0,4):MONTHS[+d.slice(5,7)-1]+" "+(+d.slice(8))+", "+d.slice(0,4),yr=g=>g.rel>9000?"TBA":g.rel;
-const TYPES={main:"Main games",spin:"Spin-offs",handheld:"DS & PSP handhelds",dlc:"DLC & expansions",mobile:"Mobile (iOS/Android)",java:"Browser & Java phones"};
+const TYPES={main:"Main games",spin:"Spin-offs",handheld:"Handhelds",remake:"Remakes",dlc:"DLC & expansions",mobile:"Mobile (iOS/Android)",java:"Browser & Java phones"};
 // ===================================================================================
 const $=i=>document.getElementById(i),fmt=y=>y<0?-y+" BCE":y;
 const era=y=>y<500?"Ancient":y<1400?"Medieval":y<1700?"Renaissance & Early Modern":y<1800?"Age of Sail & Revolution":y<1900?"Industrial Age":"Modern Era";
@@ -177,7 +181,7 @@ const MODES={
  reg:{n:"Region",s:(a,b)=>REG.indexOf(a.reg)-REG.indexOf(b.reg)||a.y-b.y,g:g=>g.reg},
  hero:{n:"Protagonist",s:(a,b)=>a.hero.localeCompare(b.hero)||a.rel-b.rel,g:g=>g.hero}
 };
-const F={plat:new Set(),reg:new Set(),era:new Set(),q:"",type:new Set(["main","spin","handheld"])};let mode="rel",order=[],col={},sel=null,hl=new Set(),arcs=true,entered=false,fly=null,drag=null,pts=[];
+const F={plat:new Set(),reg:new Set(),era:new Set(),q:"",type:new Set(["main"])};let mode="rel",order=[],col={},sel=null,hl=new Set(),arcs=true,entered=false,fly=null,drag=null,pts=[];
 const rot=[-20,-20],cv=$("g"),ctx=cv.getContext("2d");
 const countries=topojson.feature(TOPO,TOPO.objects.countries).features,land=topojson.feature(TOPO,TOPO.objects.land),
  borders=topojson.mesh(TOPO,TOPO.objects.countries,(a,b)=>a!==b),sphere={type:"Sphere"},grat=d3.geoGraticule10();
@@ -227,18 +231,20 @@ function fpanel(){const c=(f,v,on,l)=>`<button class="chip${on?" on":""}" data-f
  $("fp").innerHTML=`<input id="q" placeholder="Search title, hero, place…" value="${F.q}"><h4>SHOW</h4>${Object.keys(TYPES).map(k=>c("type",k,F.type.has(k),`${TYPES[k]} (${GAMES.filter(g=>g.type===k).length})`)).join("")}<h4>PLATFORM</h4>${PLATS.map(p=>c("plat",p,F.plat.has(p))).join("")}<h4>REGION</h4>${REG.map(p=>c("reg",p,F.reg.has(p))).join("")}<h4>ERA</h4>${ERAS.map(p=>c("era",p,F.era.has(p))).join("")}`;
  const q=$("q");q.oninput=()=>{F.q=q.value.trim().toLowerCase();render()}}
 function render(){
- const M=MODES[mode];order=GAMES.filter(ok).sort(M.s);if(sel&&!order.includes(sel)){sel=null;hl.clear();detail()}
- const groups=[];if(M.g)order.forEach(g=>{const k=M.g(g);if(!groups.includes(k))groups.push(k)});
- order.forEach((g,i)=>col[g.id]=M.g?PAL[groups.indexOf(M.g(g))%PAL.length]:d3.interpolateTurbo(.08+.84*i/(order.length-1)));
+ const M=MODES[mode],o=GAMES.filter(ok).sort(M.s);order=[];const vis=g=>g.parent&&o.includes(byId[g.parent])?byId[g.parent]:null;
+ o.forEach(g=>{if(vis(g))return;order.push(g);o.filter(k=>vis(k)===g).sort((a,b)=>a.d.localeCompare(b.d)).forEach(k=>order.push(k))});const gk=g=>M.g?M.g(vis(g)||g):null;
+ if(sel&&!order.includes(sel)){sel=null;hl.clear();detail()}
+ const groups=[];if(M.g)order.forEach(g=>{const k=gk(g);if(!groups.includes(k))groups.push(k)});
+ order.forEach((g,i)=>col[g.id]=M.g?PAL[groups.indexOf(gk(g))%PAL.length]:d3.interpolateTurbo(.08+.84*i/(order.length-1)));
  let h="",last;
- for(const g of order){const k=M.g?M.g(g):null;if(k!==last&&M.g){h+=`<div class="gh">${k}</div>`;last=k}
-  h+=`<button class="it${g===sel?" on":""}" data-id="${g.id}"><span class="th">${ico(g)}${g.cover?`<img src="${g.cover}" alt="" loading="lazy" onerror="this.remove()">`:""}</span><span class="t"><b>${g.t}</b><span>${mode==="hero"?g.when+" · "+g.rel:mode==="reg"?g.place+" · "+g.when:g.hero+" · "+(mode==="rel"?g.when:yr(g))}</span></span></button>`}
+ for(const g of order){const k=gk(g);if(k!==last&&M.g){h+=`<div class="gh">${k}</div>`;last=k}
+  h+=`<button class="it${g===sel?" on":""}${vis(g)?" kid":""}" data-id="${g.id}"><span class="th">${ico(g)}${g.cover?`<img src="${g.cover}" alt="" loading="lazy" onerror="this.remove()">`:""}</span><span class="t"><b>${g.t}</b><span>${mode==="hero"?g.when+" · "+yr(g):mode==="reg"?g.place+" · "+g.when:g.hero+" · "+(mode==="rel"?g.when:yr(g))}</span></span></button>`}
  $("list").innerHTML=h;count();
 }
 function count(){$("cnt").textContent=sel?`${order.indexOf(sel)+1} / ${order.length}`:`${order.length} games`}
 function detail(){const g=sel,d=$("detail");if(!g){d.className="";return}
  d.className="has";d.innerHTML=`<div class="cov"><div class="ph">${ico(g)}<small>${TYPES[g.type]}</small></div>${g.cover?`<img src="${g.cover}" alt="${g.t}" onerror="this.remove()">`:""}</div>
- <div class="meta"><h2>${g.t}</h2><div class="row"><i>${g.hero}</i></div><div class="row">${g.place} · <i>${g.when.includes("BCE")||g.when.length>4?g.when:g.when}</i></div><div class="row">Released <i>${fmtd(g.d)}</i> · ${era(g.y)} · ${g.reg}</div><p>${g.n}</p>${g.plat.map(p=>`<span class="tag">${p}</span>`).join("")}<span class="tag">${TYPES[g.type]}</span>${g.ap?'<span class="tag" title="Setting or date not firmly confirmed">approx. data</span>':""}</div>`}
+ <div class="meta"><h2>${g.t}</h2>${g.parent?`<div class="row">DLC for <i>${byId[g.parent].t}</i></div>`:""}<div class="row"><i>${g.hero}</i></div><div class="row">${g.place} · <i>${g.when.includes("BCE")||g.when.length>4?g.when:g.when}</i></div><div class="row">Released <i>${fmtd(g.d)}</i> · ${era(g.y)} · ${g.reg}</div><p>${g.n}</p>${g.plat.map(p=>`<span class="tag">${p}</span>`).join("")}<span class="tag">${TYPES[g.type]}</span>${g.ap?'<span class="tag" title="Setting or date not firmly confirmed">approx. data</span>':""}</div>`}
 function select(g,go=true){sel=g;hl=new Set(g.ids);detail();render();location.hash=g.id;if(go)flyTo(g.lon,g.lat);const it=document.querySelector(`.it[data-id="${g.id}"]`);if(it)it.scrollIntoView({block:"nearest",behavior:"smooth"})}
 function step(d){if(!entered)return;const i=sel?order.indexOf(sel):d>0?-1:0;select(order[(i+d+order.length)%order.length])}
 
