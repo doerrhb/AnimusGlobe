@@ -2,7 +2,7 @@
 
 <img src="logo.png" alt="Animus Globe" width="260">
 
-## 🌍 [**Launch Animus Globe → animusglobe.pages.dev**](https://animusglobe.pages.dev)
+## 🌍 [**animusglobe.pages.dev**](https://animusglobe.pages.dev)
 
 # Animus Globe
 
